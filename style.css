@@ -392,3 +392,30 @@ input::placeholder {
     }
 
 }
+
+/* ================================
+   スマホ表示：入力欄のはみ出し防止
+   ================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+input,
+select,
+textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  input[type="text"],
+  input[type="time"],
+  input[type="number"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
