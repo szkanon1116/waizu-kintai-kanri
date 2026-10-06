@@ -81,6 +81,9 @@ body {
 ========================= */
 
 .time-input-group {
+    width: 100%;
+    min-width: 0;
+
     margin-bottom: 18px;
 }
 
@@ -393,59 +396,74 @@ input::placeholder {
 
 }
 
+
 /* ================================
-   スマホ表示：入力欄のはみ出し防止
-   ================================ */
+   スマホ表示：入力欄の基本対策
+================================ */
 
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
+
 
 input,
 select,
 textarea {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  input[type="text"],
-  input[type="time"],
-  input[type="number"] {
-    width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-  }
 }
+
 
 /* ================================
-   スマホ：時刻入力欄のはみ出し完全対策
-   ================================ */
-
-.time-input-group {
-  width: 100%;
-  min-width: 0;
-}
+   スマホ：出勤・退勤の時刻入力
+================================ */
 
 @media (max-width: 600px) {
-  input[type="time"] {
-    display: block;
 
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
 
-    height: 50px;
 
-    box-sizing: border-box;
+    input[type="time"] {
+        display: block;
 
-    padding: 0 10px;
-    margin: 0;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
 
-    /* iPhone / Safari の標準UIによる幅ズレ対策 */
-    -webkit-appearance: none;
-    appearance: none;
-  }
+        height: 50px;
+
+        box-sizing: border-box;
+
+        padding: 0;
+
+        margin: 0;
+
+        text-align: center;
+
+        /*
+         * 文字を入力欄の上下中央へ
+         */
+        line-height: 50px;
+
+        /*
+         * iPhone / Safari の
+         * 標準時刻入力UIによる幅ズレ対策
+         */
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+
+    .time-input-group {
+        width: 100%;
+        min-width: 0;
+    }
+
 }
