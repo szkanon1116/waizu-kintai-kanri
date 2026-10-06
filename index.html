@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>和い寿 勤怠管理アプリ</title>
+    <title>労働時間計算ツール</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -152,6 +152,47 @@
 
             <div class="result-card">
 
+
+                <!-- 出勤時間 -->
+                <div class="result-item">
+
+                    <span
+                        id="startResultLabel"
+                        class="result-label"
+                    >
+                        出勤時間
+                    </span>
+
+                    <strong
+                        id="startResult"
+                        class="result-value time-result"
+                    >
+                        --:--
+                    </strong>
+
+                </div>
+
+
+                <!-- 退勤時間 -->
+                <div class="result-item">
+
+                    <span
+                        id="endResultLabel"
+                        class="result-label"
+                    >
+                        退勤時間
+                    </span>
+
+                    <strong
+                        id="endResult"
+                        class="result-value time-result"
+                    >
+                        --:--
+                    </strong>
+
+                </div>
+
+
                 <!-- 実働時間 -->
                 <div class="result-item">
 
@@ -195,7 +236,7 @@
                 <!-- 別紙記入 -->
                 <div
                     id="separatePaperResult"
-                    class="result-item hidden"
+                    class="result-item separate-paper-result hidden"
                 >
 
                     <span class="result-label">
