@@ -4,142 +4,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f4ff">
     <title>和い寿 勤怠管理アプリ</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <main class="app-container">
 
-        <header class="app-header">
-            <h1>労働時間計算ツール</h1>
-            <p>勤怠時間をかんたん計算</p>
-        </header>
+<main class="app-container">
 
-        <section class="attendance-card">
-            <h2>勤務時間を入力</h2>
+    <header class="app-header">
+        <h1>労働時間計算ツール</h1>
+        <p>勤怠時間をかんたん計算</p>
+    </header>
 
-            <div class="time-input-group">
-                <label for="startTime">出勤時間</label>
-                <input type="time" id="startTime">
-            </div>
+    <section class="attendance-card">
 
-            <div class="time-input-group">
-                <label for="endTime">退勤時間</label>
-                <input type="time" id="endTime">
-            </div>
+        <h2>勤務時間を入力</h2>
 
-            <div class="break-section">
-                <h3>休憩時間</h3>
-                <p class="input-help">「時間：分」の形で入力してください</p>
+        <!-- 出勤時間 -->
+        <div class="time-input-group">
+            <label for="startTimeButton">出勤時間</label>
 
-                <div class="duration-input-group">
-                    <label for="break1">休憩①</label>
-                    <input
-                        type="text"
-                        id="break1"
-                        inputmode="numeric"
-                        placeholder="0：00"
-                        maxlength="7"
-                        autocomplete="off"
-                    >
-                </div>
-
-                <div class="duration-input-group">
-                    <label for="break2">休憩②</label>
-                    <input
-                        type="text"
-                        id="break2"
-                        inputmode="numeric"
-                        placeholder="未入力の場合は空欄"
-                        maxlength="7"
-                        autocomplete="off"
-                    >
-                </div>
-            </div>
-
-            <div class="rule-section">
-                <div class="rule-header">
-                    <span>2時間別紙ルール</span>
-                    <button
-                        type="button"
-                        id="separatePaperToggle"
-                        class="toggle-button"
-                    >自動</button>
-                </div>
-
-                <p class="rule-description">
-                    残業が1：59を超える場合、自動で適用されます。
-                </p>
-            </div>
+            <input type="hidden" id="startTime">
 
             <button
                 type="button"
-                id="calculateButton"
-                class="calculate-button"
-            >計算する</button>
-        </section>
+                class="time-picker-trigger"
+                id="startTimeButton"
+                data-target="startTime"
+            >
+                <span class="time-display-placeholder">時刻を選択</span>
+            </button>
+        </div>
 
-        <section id="resultSection" class="result-section hidden">
-            <div class="result-card">
+        <!-- 退勤時間 -->
+        <div class="time-input-group">
+            <label for="endTimeButton">退勤時間</label>
 
-                <div class="result-item">
-                    <span id="startResultLabel" class="result-label">
-                        出勤時間
-                    </span>
-                    <strong id="startResult" class="result-value time-result">
-                        --:--
-                    </strong>
-                </div>
+            <input type="hidden" id="endTime">
 
-                <div class="result-item">
-                    <span id="endResultLabel" class="result-label">
-                        退勤時間
-                    </span>
-                    <strong id="endResult" class="result-value time-result">
-                        --:--
-                    </strong>
-                </div>
+            <button
+                type="button"
+                class="time-picker-trigger"
+                id="endTimeButton"
+                data-target="endTime"
+            >
+                <span class="time-display-placeholder">時刻を選択</span>
+            </button>
+        </div>
 
-                <div class="result-item">
-                    <span id="workLabel" class="result-label">
-                        実働時間
-                    </span>
-                    <strong id="workResult" class="result-value">
-                        0：00
-                    </strong>
-                </div>
+        <!-- 休憩時間 -->
+        <div class="break-section">
 
-                <div class="result-item">
-                    <span id="overtimeLabel" class="result-label">
-                        残業時間
-                    </span>
-                    <strong id="overtimeResult" class="result-value">
-                        0：00
-                    </strong>
-                </div>
+            <h3>休憩時間</h3>
 
-                <!-- 別紙記入：適用時は2：00、不適用時は「なし」 -->
-                <div
-                    id="separatePaperResult"
-                    class="result-item separate-paper-result"
+            <p class="input-help">
+                「時間：分」の形で入力してください
+            </p>
+
+            <div class="duration-input-group">
+                <label for="break1">休憩①</label>
+                <input
+                    type="text"
+                    id="break1"
+                    inputmode="numeric"
+                    placeholder="0：00"
+                    maxlength="7"
+                    autocomplete="off"
                 >
-                    <span class="result-label">別紙記入</span>
-                    <strong
-                        id="separatePaperValue"
-                        class="result-value"
-                    >なし</strong>
-                </div>
-
             </div>
-        </section>
 
-        <footer class="app-footer">
-            <p>※このアプリは勤怠時間の自動計算・確認用です。</p>
-            <p>最終的な勤務時間は、ご自身で必ず確認してください。</p>
-        </footer>
+            <div class="duration-input-group">
+                <label for="break2">休憩②</label>
+                <input
+                    type="text"
+                    id="break2"
+                    inputmode="numeric"
+                    placeholder="未入力の場合は空欄"
+                    maxlength="7"
+                    autocomplete="off"
+                >
+            </div>
 
-    </main>
+        </div>
 
-    <script src="script.js"></script>
+        <!-- 2時間別紙ルール -->
+        <div class="rule-section">
+
+            <div class="rule-header">
+                <span>2時間別紙ルール</span>
+
+                <button
+                    type="button"
+                    id="separatePaperToggle"
+                    class="toggle-button"
+                >
+                    自動
+                </button>
+            </div>
+
+            <p class="rule-description">
+                残業が1：59を超える場合、自動で適用されます。
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            id="calculateButton"
+            class="calculate-button"
+        >
+            計算する
+        </button>
+
+    </section>
+
+    <!-- 計算結果 -->
+    <section
+        id="resultSection"
+        class="result-section hidden"
+    >
+
+        <div class="result-card">
+
+            <div class="result-item">
+                <span
+                    id="startResultLabel"
+                    class="result-label"
+                >
+                    出勤時間
+                </span>
+
+                <strong
+                    id="startResult"
+                    class="result-value"
+                >
+                    --:--
+                </strong>
+            </div>
+
+            <div class="result-item">
+                <span
+                    id="endResultLabel"
+                    class="result-label"
+                >
+                    退勤時間
+                </span>
+
+                <strong
+                    id="endResult"
+                    class="result-value"
+                >
+                    --:--
+                </strong>
+            </div>
+
+            <div class="result-item">
+                <span
+                    id="workLabel"
+                    class="result-label"
+                >
+                    実働時間
+                </span>
+
+                <strong
+                    id="workResult"
+                    class="result-value"
+                >
+                    0：00
+                </strong>
+            </div>
+
+            <div class="result-item">
+                <span
+                    id="overtimeLabel"
+                    class="result-label"
+                >
+                    残業時間
+                </span>
+
+                <strong
+                    id="overtimeResult"
+                    class="result-value"
+                >
+                    0：00
+                </strong>
+            </div>
+
+            <!-- 別紙記入 -->
+            <div
+                id="separatePaperResult"
+                class="separate-paper-result"
+            >
+                <span class="result-label">別紙記入</span>
+
+                <strong
+                    id="separatePaperValue"
+                    class="result-value"
+                >
+                    なし
+                </strong>
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer class="app-footer">
+        <p>※このアプリは勤怠時間の自動計算・確認用です。</p>
+        <p>最終的な勤務時間は、ご自身で必ず確認してください。</p>
+    </footer>
+
+</main>
+
+
+<!-- =================================
+     時刻選択モーダル
+================================= -->
+
+<div
+    id="timePickerModal"
+    class="time-picker-overlay hidden"
+    aria-hidden="true"
+>
+
+    <div
+        class="time-picker-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="timePickerTitle"
+    >
+
+        <div class="picker-header">
+            <h2 id="timePickerTitle">時刻を選択</h2>
+            <p>時と分を選んでください</p>
+        </div>
+
+        <div class="picker-select-area">
+
+            <div class="picker-column">
+                <label for="pickerHour">時</label>
+
+                <select id="pickerHour" size="1"></select>
+            </div>
+
+            <span class="picker-colon">:</span>
+
+            <div class="picker-column">
+                <label for="pickerMinute">分</label>
+
+                <select id="pickerMinute" size="1"></select>
+            </div>
+
+        </div>
+
+        <div class="picker-preview">
+            <span>選択中</span>
+            <strong id="pickerPreview">09:00</strong>
+        </div>
+
+        <div class="picker-actions">
+
+            <button
+                type="button"
+                id="pickerCancel"
+                class="picker-cancel-button"
+            >
+                キャンセル
+            </button>
+
+            <button
+                type="button"
+                id="pickerConfirm"
+                class="picker-confirm-button"
+            >
+                決定
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
 </body>
 </html>

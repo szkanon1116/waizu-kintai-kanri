@@ -1,7 +1,7 @@
 
 /* =========================================
    和い寿 勤怠管理アプリ
-   JavaScript 完成版
+   独自時刻選択 + 勤怠計算 完成版
 ========================================= */
 
 
@@ -9,24 +9,35 @@
    ① HTML要素の取得
 ========================================= */
 
+// 時刻の保存先
 const startTimeInput =
     document.getElementById("startTime");
 
 const endTimeInput =
     document.getElementById("endTime");
 
+// 時刻選択ボタン
+const startTimeButton =
+    document.getElementById("startTimeButton");
+
+const endTimeButton =
+    document.getElementById("endTimeButton");
+
+// 休憩入力
 const break1Input =
     document.getElementById("break1");
 
 const break2Input =
     document.getElementById("break2");
 
+// 計算関連
 const calculateButton =
     document.getElementById("calculateButton");
 
 const resultSection =
     document.getElementById("resultSection");
 
+// 計算結果
 const startResultLabel =
     document.getElementById("startResultLabel");
 
@@ -51,33 +62,250 @@ const overtimeLabel =
 const overtimeResult =
     document.getElementById("overtimeResult");
 
+const separatePaperValue =
+    document.getElementById("separatePaperValue");
+
+// 別紙ルール
 const separatePaperToggle =
     document.getElementById("separatePaperToggle");
 
+// 時刻選択モーダル
+const timePickerModal =
+    document.getElementById("timePickerModal");
 
-/*
-  別紙欄の文字は、計算時に直接取得する。
-  HTML側のIDに依存して文字を更新する。
-*/
-function updateSeparatePaperDisplay(useSeparatePaper) {
+const pickerHour =
+    document.getElementById("pickerHour");
 
-    const paperValueElement =
-        document.querySelector(
-            "#separatePaperResult .result-value"
-        );
+const pickerMinute =
+    document.getElementById("pickerMinute");
 
-    if (!paperValueElement) {
-        console.error("別紙記入欄が見つかりません。");
-        return;
-    }
+const pickerPreview =
+    document.getElementById("pickerPreview");
 
-    paperValueElement.textContent =
-        useSeparatePaper ? "2：00" : "なし";
+const pickerCancel =
+    document.getElementById("pickerCancel");
+
+const pickerConfirm =
+    document.getElementById("pickerConfirm");
+
+
+/* =========================================
+   ② 時刻選択欄の準備
+========================================= */
+
+let activeTimeInput = null;
+let activeTimeButton = null;
+
+
+/* 時の選択肢を作成 */
+
+for (let hour = 0; hour <= 23; hour++) {
+
+    const option = document.createElement("option");
+
+    option.value =
+        String(hour).padStart(2, "0");
+
+    option.textContent =
+        String(hour).padStart(2, "0");
+
+    pickerHour.appendChild(option);
+
+}
+
+
+/* 分の選択肢を作成 */
+
+for (let minute = 0; minute <= 59; minute++) {
+
+    const option = document.createElement("option");
+
+    option.value =
+        String(minute).padStart(2, "0");
+
+    option.textContent =
+        String(minute).padStart(2, "0");
+
+    pickerMinute.appendChild(option);
+
+}
+
+
+/* 選択中の時刻を表示 */
+
+function updatePickerPreview() {
+
+    pickerPreview.textContent =
+        `${pickerHour.value}:${pickerMinute.value}`;
+
 }
 
 
 /* =========================================
-   ② 別紙ルール設定
+   ③ 時刻選択画面を開く
+========================================= */
+
+function openTimePicker(inputElement, buttonElement) {
+
+    activeTimeInput = inputElement;
+    activeTimeButton = buttonElement;
+
+    const currentValue =
+        inputElement.value;
+
+    if (currentValue && currentValue.includes(":")) {
+
+        const parts = currentValue.split(":");
+
+        pickerHour.value = parts[0];
+        pickerMinute.value = parts[1];
+
+    } else {
+
+        // 未選択の場合の初期値
+        pickerHour.value = "09";
+        pickerMinute.value = "00";
+
+    }
+
+    updatePickerPreview();
+
+    timePickerModal.classList.remove("hidden");
+
+    timePickerModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+}
+
+
+/* 出勤時間ボタン */
+
+startTimeButton.addEventListener("click", () => {
+
+    openTimePicker(
+        startTimeInput,
+        startTimeButton
+    );
+
+});
+
+
+/* 退勤時間ボタン */
+
+endTimeButton.addEventListener("click", () => {
+
+    openTimePicker(
+        endTimeInput,
+        endTimeButton
+    );
+
+});
+
+
+/* =========================================
+   ④ 時刻選択画面の操作
+========================================= */
+
+pickerHour.addEventListener(
+    "change",
+    updatePickerPreview
+);
+
+pickerMinute.addEventListener(
+    "change",
+    updatePickerPreview
+);
+
+
+/* =========================================
+   ⑤ 時刻選択を閉じる
+========================================= */
+
+function closeTimePicker() {
+
+    timePickerModal.classList.add("hidden");
+
+    timePickerModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    activeTimeInput = null;
+    activeTimeButton = null;
+
+}
+
+
+/* キャンセル */
+
+pickerCancel.addEventListener(
+    "click",
+    closeTimePicker
+);
+
+
+/* 背景部分をタップして閉じる */
+
+timePickerModal.addEventListener("click", (event) => {
+
+    if (event.target === timePickerModal) {
+
+        closeTimePicker();
+
+    }
+
+});
+
+
+/* Escapeキーで閉じる */
+
+document.addEventListener("keydown", (event) => {
+
+    if (
+        event.key === "Escape" &&
+        !timePickerModal.classList.contains("hidden")
+    ) {
+
+        closeTimePicker();
+
+    }
+
+});
+
+
+/* =========================================
+   ⑥ 時刻を確定する
+========================================= */
+
+pickerConfirm.addEventListener("click", () => {
+
+    if (!activeTimeInput || !activeTimeButton) {
+        return;
+    }
+
+    const selectedTime =
+        `${pickerHour.value}:${pickerMinute.value}`;
+
+    // 計算用の値を保存
+    activeTimeInput.value = selectedTime;
+
+    // 画面に表示
+    activeTimeButton.textContent = selectedTime;
+
+    activeTimeButton.classList.add("has-value");
+
+    // 古い計算結果を消す
+    clearResult();
+
+    closeTimePicker();
+
+});
+
+
+/* =========================================
+   ⑦ 別紙ルール設定
    自動 → ON → OFF → 自動
 ========================================= */
 
@@ -89,16 +317,19 @@ separatePaperToggle.addEventListener("click", () => {
     if (separatePaperMode === "auto") {
 
         separatePaperMode = "on";
+
         separatePaperToggle.textContent = "ON";
 
     } else if (separatePaperMode === "on") {
 
         separatePaperMode = "off";
+
         separatePaperToggle.textContent = "OFF";
 
     } else {
 
         separatePaperMode = "auto";
+
         separatePaperToggle.textContent = "自動";
 
     }
@@ -109,7 +340,7 @@ separatePaperToggle.addEventListener("click", () => {
 
 
 /* =========================================
-   ③ 時刻を分に変換
+   ⑧ 時刻を分に変換
 ========================================= */
 
 function timeToMinutes(value) {
@@ -144,7 +375,7 @@ function timeToMinutes(value) {
 
 
 /* =========================================
-   ④ 休憩時間を分に変換
+   ⑨ 休憩時間を分に変換
 ========================================= */
 
 function durationToMinutes(value) {
@@ -191,7 +422,7 @@ function durationToMinutes(value) {
 
 
 /* =========================================
-   ⑤ 分を「○：△」形式に変換
+   ⑩ 分を「○：△」形式に変換
 ========================================= */
 
 function minutesToDisplay(totalMinutes) {
@@ -210,7 +441,7 @@ function minutesToDisplay(totalMinutes) {
 
 
 /* =========================================
-   ⑥ 分を「HH:MM」形式に変換
+   ⑪ 分を「HH:MM」形式に変換
 ========================================= */
 
 function minutesToTimeDisplay(totalMinutes) {
@@ -233,7 +464,19 @@ function minutesToTimeDisplay(totalMinutes) {
 
 
 /* =========================================
-   ⑦ 計算結果をリセット
+   ⑫ 別紙記入欄の表示更新
+========================================= */
+
+function updateSeparatePaperDisplay(useSeparatePaper) {
+
+    separatePaperValue.textContent =
+        useSeparatePaper ? "2：00" : "なし";
+
+}
+
+
+/* =========================================
+   ⑬ 計算結果をリセット
 ========================================= */
 
 function clearResult() {
@@ -242,6 +485,7 @@ function clearResult() {
 
     startResultLabel.textContent = "出勤時間";
     endResultLabel.textContent = "退勤時間";
+
     workLabel.textContent = "実働時間";
     overtimeLabel.textContent = "残業時間";
 
@@ -257,12 +501,10 @@ function clearResult() {
 
 
 /* =========================================
-   ⑧ 入力変更時に古い結果を消す
+   ⑭ 入力変更時に古い結果を消す
 ========================================= */
 
 [
-    startTimeInput,
-    endTimeInput,
     break1Input,
     break2Input
 
@@ -274,7 +516,7 @@ function clearResult() {
 
 
 /* =========================================
-   ⑨ 計算ボタン
+   ⑮ 計算ボタン
 ========================================= */
 
 calculateButton.addEventListener(
@@ -284,7 +526,7 @@ calculateButton.addEventListener(
 
 
 /* =========================================
-   ⑩ 勤怠計算メイン処理
+   ⑯ 勤怠計算メイン処理
 ========================================= */
 
 function calculateAttendance() {
@@ -292,37 +534,31 @@ function calculateAttendance() {
     clearResult();
 
 
-    /* -------------------------------------
-       出勤時間チェック
-    ------------------------------------- */
+    /* 出勤時間チェック */
 
     if (!startTimeInput.value) {
 
         alert("出勤時間を入力してください。");
 
-        startTimeInput.focus();
+        startTimeButton.focus();
 
         return;
     }
 
 
-    /* -------------------------------------
-       退勤時間チェック
-    ------------------------------------- */
+    /* 退勤時間チェック */
 
     if (!endTimeInput.value) {
 
         alert("退勤時間を入力してください。");
 
-        endTimeInput.focus();
+        endTimeButton.focus();
 
         return;
     }
 
 
-    /* -------------------------------------
-       時刻を分に変換
-    ------------------------------------- */
+    /* 時刻を分に変換 */
 
     const startMinutes =
         timeToMinutes(startTimeInput.value);
@@ -344,7 +580,7 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
+    /* =====================================
        日をまたぐ勤務に対応
 
        例：
@@ -352,7 +588,7 @@ function calculateAttendance() {
        退勤 12:00
 
        退勤を翌日の12:00として扱う
-    ------------------------------------- */
+    ===================================== */
 
     if (endMinutes < startMinutes) {
 
@@ -361,9 +597,7 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
-       出勤と退勤が同じ場合
-    ------------------------------------- */
+    /* 出勤と退勤が同じ場合 */
 
     if (endMinutes === startMinutes) {
 
@@ -376,9 +610,7 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
-       勤務時間の合計
-    ------------------------------------- */
+    /* 勤務時間の合計 */
 
     const totalSpan =
         endMinutes - startMinutes;
@@ -395,9 +627,7 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
-       休憩①チェック
-    ------------------------------------- */
+    /* 休憩①チェック */
 
     if (!break1Input.value.trim()) {
 
@@ -427,10 +657,7 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
-       休憩②チェック
-       空欄の場合は0分
-    ------------------------------------- */
+    /* 休憩②チェック */
 
     let break2 = 0;
 
@@ -456,9 +683,7 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
-       休憩時間の合計
-    ------------------------------------- */
+    /* 休憩合計 */
 
     const totalBreak =
         break1 + break2;
@@ -475,9 +700,7 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
-       実働時間
-    ------------------------------------- */
+    /* 実働時間 */
 
     const actualWork =
         totalSpan - totalBreak;
@@ -493,26 +716,18 @@ function calculateAttendance() {
     }
 
 
-    /* -------------------------------------
-       残業時間
-       実働8時間を超えた部分
-    ------------------------------------- */
+    /* 残業時間：実働8時間を超えた部分 */
 
     const overtime =
         Math.max(0, actualWork - 480);
 
 
     /* =====================================
-       ⑪ 2時間別紙ルール判定
+       ⑰ 2時間別紙ルール判定
 
-       自動：
-       残業2時間以上で適用
-
-       ON：
-       残業2時間以上で適用
-
-       OFF：
-       適用しない
+       自動：残業2時間以上で適用
+       ON：残業2時間以上で適用
+       OFF：適用しない
     ===================================== */
 
     let useSeparatePaper = false;
@@ -534,7 +749,7 @@ function calculateAttendance() {
 
 
     /* =====================================
-       ⑫ 表示用時間を計算
+       ⑱ 表示用時間を計算
     ===================================== */
 
     let displayWork =
@@ -549,25 +764,11 @@ function calculateAttendance() {
 
     if (useSeparatePaper) {
 
-        /*
-          勤務表上の実働時間から2時間引く
-        */
-
         displayWork =
             actualWork - 120;
 
-
-        /*
-          勤務表上の残業時間から2時間引く
-        */
-
         displayOvertime =
             overtime - 120;
-
-
-        /*
-          勤務表上の退勤時間から2時間引く
-        */
 
         displayEndMinutes =
             endMinutes - 120;
@@ -576,7 +777,7 @@ function calculateAttendance() {
 
 
     /* =====================================
-       ⑬ 結果ラベルの切り替え
+       ⑲ 結果ラベルを切り替え
     ===================================== */
 
     if (useSeparatePaper) {
@@ -604,14 +805,7 @@ function calculateAttendance() {
     }
 
 
-    /* =====================================
-       ⑭ 別紙記入欄の表示
-
-       適用あり → 2：00
-       適用なし → なし
-
-       昼勤・夜勤共通
-    ===================================== */
+    /* 別紙記入欄 */
 
     updateSeparatePaperDisplay(
         useSeparatePaper
@@ -619,7 +813,7 @@ function calculateAttendance() {
 
 
     /* =====================================
-       ⑮ 計算結果を画面に反映
+       ⑳ 計算結果を画面に反映
     ===================================== */
 
     startResult.textContent =
@@ -635,9 +829,7 @@ function calculateAttendance() {
         minutesToDisplay(displayOvertime);
 
 
-    /* =====================================
-       ⑯ 結果表示
-    ===================================== */
+    /* 結果表示 */
 
     resultSection.classList.remove("hidden");
 
