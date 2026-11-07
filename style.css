@@ -4,8 +4,6 @@
    CSS 完成版
 ========================================= */
 
-/* 共通設定 */
-
 *,
 *::before,
 *::after {
@@ -20,7 +18,6 @@ html {
 body {
     width: 100%;
     margin: 0;
-
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -28,30 +25,21 @@ body {
         "Hiragino Kaku Gothic ProN",
         "Yu Gothic",
         sans-serif;
-
     background: #f8f4ff;
     color: #555;
-
     overflow-x: hidden;
 }
 
-
-/* =========================================
-   全体レイアウト
-========================================= */
+/* 全体レイアウト */
 
 .app-container {
     width: min(92%, 600px);
     max-width: 100%;
-
     margin: 0 auto;
     padding: 24px 0 40px;
 }
 
-
-/* =========================================
-   ヘッダー
-========================================= */
+/* ヘッダー */
 
 .app-header {
     text-align: center;
@@ -60,94 +48,67 @@ body {
 
 .app-header h1 {
     margin: 0;
-
     font-size: 25px;
     color: #6f6685;
 }
 
 .app-header p {
     margin: 8px 0 0;
-
     color: #9b94aa;
     font-size: 14px;
 }
 
-
-/* =========================================
-   入力カード
-========================================= */
+/* 入力カード */
 
 .attendance-card {
     width: 100%;
     max-width: 100%;
-
     background: #ffffff;
     border-radius: 24px;
-
     padding: 24px;
-
-    box-shadow:
-        0 8px 24px rgba(120, 100, 150, 0.08);
-
+    box-shadow: 0 8px 24px rgba(120, 100, 150, 0.08);
     overflow: hidden;
 }
 
 .attendance-card h2 {
     margin: 0 0 22px;
-
     font-size: 20px;
     color: #70677f;
 }
 
-
-/* =========================================
-   出勤・退勤時間入力
-========================================= */
+/* 出勤・退勤時間入力 */
 
 .time-input-group {
     width: 100%;
     min-width: 0;
     max-width: 100%;
-
     margin-bottom: 18px;
 }
 
 .time-input-group label,
 .duration-input-group label {
     display: block;
-
     margin-bottom: 7px;
-
     font-size: 14px;
     font-weight: 600;
-
     color: #81798f;
 }
 
 input[type="time"],
 input[type="text"] {
     display: block;
-
     width: 100%;
     min-width: 0;
     max-width: 100%;
-
     height: 50px;
-
     border: 2px solid #e8e1f1;
     border-radius: 14px;
-
     background: #fcfaff;
     color: #5d5668;
-
     font-family: inherit;
     font-size: 18px;
-
     box-sizing: border-box;
-
-    transition:
-        border-color 0.2s,
-        background 0.2s;
+    transition: border-color 0.2s, background 0.2s;
 }
 
 input[type="text"] {
@@ -157,7 +118,6 @@ input[type="text"] {
 input[type="time"]:focus,
 input[type="text"]:focus {
     outline: none;
-
     border-color: #cdbde8;
     background: #ffffff;
 }
@@ -167,34 +127,26 @@ input::placeholder {
     font-size: 14px;
 }
 
-
-/* =========================================
-   休憩時間
-========================================= */
+/* 休憩時間 */
 
 .break-section {
     width: 100%;
     max-width: 100%;
-
     margin-top: 26px;
     padding: 20px;
-
     border-radius: 18px;
     background: #fff8fb;
-
     overflow: hidden;
 }
 
 .break-section h3 {
     margin: 0 0 5px;
-
     font-size: 17px;
     color: #89717d;
 }
 
 .input-help {
     margin: 0 0 18px;
-
     font-size: 12px;
     color: #a6979f;
 }
@@ -203,7 +155,6 @@ input::placeholder {
     width: 100%;
     min-width: 0;
     max-width: 100%;
-
     margin-bottom: 14px;
 }
 
@@ -211,52 +162,37 @@ input::placeholder {
     margin-bottom: 0;
 }
 
-
-/* =========================================
-   2時間別紙ルール設定
-========================================= */
+/* 2時間別紙ルール設定 */
 
 .rule-section {
     width: 100%;
     max-width: 100%;
-
     margin-top: 20px;
     padding: 18px;
-
     border-radius: 18px;
     background: #f5f9ff;
-
     overflow: hidden;
 }
 
 .rule-header {
     display: flex;
-
     justify-content: space-between;
     align-items: center;
-
     gap: 12px;
-
     font-weight: 600;
     color: #68758a;
 }
 
 .toggle-button {
     flex-shrink: 0;
-
     min-width: 72px;
-
     border: none;
     padding: 9px 16px;
-
     border-radius: 999px;
-
     background: #dcecff;
     color: #59718e;
-
     font-weight: 700;
     cursor: pointer;
-
     transition: 0.2s;
 }
 
@@ -266,43 +202,28 @@ input::placeholder {
 
 .rule-description {
     margin: 10px 0 0;
-
     font-size: 12px;
     line-height: 1.6;
-
     color: #8993a1;
 }
 
-
-/* =========================================
-   計算ボタン
-========================================= */
+/* 計算ボタン */
 
 .calculate-button {
     display: block;
-
     width: 100%;
     max-width: 100%;
-
     margin-top: 24px;
     min-height: 58px;
-
     padding: 12px;
-
     border: none;
     border-radius: 18px;
-
     background: #d9c8f0;
     color: #5e5270;
-
     font-size: 18px;
     font-weight: 700;
-
     cursor: pointer;
-
-    box-shadow:
-        0 5px 12px rgba(120, 100, 150, 0.12);
-
+    box-shadow: 0 5px 12px rgba(120, 100, 150, 0.12);
     transition: 0.2s;
 }
 
@@ -314,52 +235,34 @@ input::placeholder {
     transform: translateY(1px);
 }
 
-
-/* =========================================
-   計算結果カード
-========================================= */
+/* 計算結果カード */
 
 .result-section {
     width: 100%;
     max-width: 100%;
-
     margin-top: 20px;
 }
 
 .result-card {
     width: 100%;
     max-width: 100%;
-
     min-width: 0;
-
     padding: 10px 24px;
-
     background: #ffffff;
     border-radius: 24px;
-
-    box-shadow:
-        0 8px 24px rgba(120, 100, 150, 0.08);
-
+    box-shadow: 0 8px 24px rgba(120, 100, 150, 0.08);
     overflow: hidden;
 }
 
-
-/* =========================================
-   結果の各項目
-========================================= */
+/* 結果の各項目 */
 
 .result-item {
     display: block;
-
     width: 100%;
     max-width: 100%;
-
     min-width: 0;
-
     padding: 20px 0;
-
     text-align: center;
-
     border-bottom: 1px solid #eee9f4;
 }
 
@@ -369,35 +272,24 @@ input::placeholder {
 
 .result-label {
     display: block;
-
     width: 100%;
     max-width: 100%;
-
     margin-bottom: 8px;
-
     color: #888091;
-
     font-size: 15px;
     font-weight: 600;
-
     line-height: 1.5;
-
     overflow-wrap: anywhere;
 }
 
 .result-value {
     display: block;
-
     width: 100%;
     max-width: 100%;
-
     color: #655579;
-
     font-size: 34px;
-
     letter-spacing: 1px;
     line-height: 1.25;
-
     overflow-wrap: anywhere;
 }
 
@@ -405,78 +297,50 @@ input::placeholder {
     letter-spacing: 1px;
 }
 
-
-/* =========================================
-   別紙記入欄
-   薄いクリームイエロー
-========================================= */
+/* 別紙記入欄：薄いクリームイエロー */
 
 #separatePaperResult {
     display: block;
-
     width: calc(100% - 8px);
     max-width: 100%;
-
     margin: 8px auto 10px;
-
     padding: 18px 10px;
-
     border: 2px solid #f4eab5;
     border-radius: 14px;
-
     background: #fffdf0;
-
     overflow: hidden;
 }
 
-/* 別紙記入ラベル */
-
 #separatePaperResult .result-label {
     margin-bottom: 7px;
-
     color: #9a8b4d;
-
     font-size: 15px;
 }
 
-/* 2：00 または なし */
-
 #separatePaperResult .result-value {
     color: #75652c;
-
     font-size: 34px;
     letter-spacing: 1px;
     line-height: 1.25;
 }
 
-
-/* =========================================
-   非表示設定
-========================================= */
+/* 非表示設定 */
 
 .hidden {
     display: none !important;
 }
 
-
-/* =========================================
-   フッター
-========================================= */
+/* フッター */
 
 .app-footer {
     width: 100%;
     max-width: 100%;
-
     margin-top: 24px;
-
     text-align: center;
-
     color: #a29aaa;
-
     font-size: 11px;
     line-height: 1.7;
 }
-
 
 /* =========================================
    スマートフォン対応
@@ -487,48 +351,34 @@ input::placeholder {
     .app-container {
         width: 94%;
         max-width: 94%;
-
         padding-top: 18px;
         padding-bottom: 30px;
     }
 
-    /* 入力カード */
-
     .attendance-card {
         width: 100%;
         max-width: 100%;
-
         padding: 20px;
-
         border-radius: 22px;
     }
 
-
     /* -------------------------------------
        iPhoneの時刻入力欄
-       縦位置調整
+       今回は大きく下方向へ調整！
     ------------------------------------- */
 
     input[type="time"] {
         display: block;
-
         width: 100%;
         min-width: 0;
         max-width: 100%;
-
         height: 50px;
-
         margin: 0;
 
-        /*
-          上下の余白を調整して
-          時刻表示を中央付近に配置
-        */
-
-        padding: 7px 10px 0;
+        /* 上側の余白を18pxに増やす */
+        padding: 18px 10px 0;
 
         text-align: center;
-
         font-family: inherit;
         font-size: 18px;
         line-height: 1;
@@ -538,11 +388,9 @@ input::placeholder {
 
         border: 2px solid #e8e1f1;
         border-radius: 14px;
-
         background: #fcfaff;
         color: #5d5668;
     }
-
 
     /* 休憩入力欄 */
 
@@ -550,57 +398,43 @@ input::placeholder {
         width: 100%;
         min-width: 0;
         max-width: 100%;
-
         padding: 0 12px;
-
         font-size: 17px;
     }
-
 
     /* 休憩カード */
 
     .break-section {
         width: 100%;
         max-width: 100%;
-
         padding: 18px;
-
         border-radius: 17px;
     }
-
 
     /* 別紙ルール */
 
     .rule-section {
         width: 100%;
         max-width: 100%;
-
         padding: 16px;
-
         border-radius: 17px;
     }
-
 
     /* 結果カード */
 
     .result-card {
         width: 100%;
         max-width: 100%;
-
         padding: 8px 14px;
-
         border-radius: 22px;
-
         overflow: hidden;
     }
-
 
     /* 結果項目 */
 
     .result-item {
         width: 100%;
         max-width: 100%;
-
         padding: 18px 4px;
     }
 
@@ -612,26 +446,17 @@ input::placeholder {
         font-size: 32px;
     }
 
-
-    /* -------------------------------------
-       スマホの別紙記入欄
-    ------------------------------------- */
+    /* スマホの別紙記入欄 */
 
     #separatePaperResult {
         display: block;
-
         width: calc(100% - 8px);
         max-width: 100%;
-
         margin: 8px auto 10px;
-
         padding: 16px 8px;
-
         border-radius: 13px;
-
         background: #fffdf0;
         border: 2px solid #f4eab5;
-
         overflow: hidden;
     }
 
@@ -644,17 +469,14 @@ input::placeholder {
         font-size: 29px;
     }
 
-
     /* フッター */
 
     .app-footer {
         width: 100%;
         max-width: 100%;
-
         padding: 0 8px;
     }
 }
-
 
 /* =========================================
    小さいスマートフォン対応
@@ -685,8 +507,6 @@ input::placeholder {
 
     #separatePaperResult {
         width: calc(100% - 6px);
-        max-width: 100%;
-
         padding: 15px 6px;
     }
 
@@ -695,10 +515,7 @@ input::placeholder {
     }
 }
 
-
-/* =========================================
-   最終的な横幅はみ出し防止
-========================================= */
+/* 最終的な横幅はみ出し防止 */
 
 input,
 select,
