@@ -1,78 +1,39 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>労働時間計算ツール</title>
-
+    <title>和い寿 勤怠管理アプリ</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
     <main class="app-container">
 
-        <!-- ヘッダー -->
         <header class="app-header">
             <h1>労働時間計算ツール</h1>
             <p>勤怠時間をかんたん計算</p>
         </header>
 
-
-        <!-- 入力エリア -->
         <section class="attendance-card">
-
             <h2>勤務時間を入力</h2>
 
-
-            <!-- 出勤 -->
             <div class="time-input-group">
-
-                <label for="startTime">
-                    出勤時間
-                </label>
-
-                <input
-                    type="time"
-                    id="startTime"
-                >
-
+                <label for="startTime">出勤時間</label>
+                <input type="time" id="startTime">
             </div>
 
-
-            <!-- 退勤 -->
             <div class="time-input-group">
-
-                <label for="endTime">
-                    退勤時間
-                </label>
-
-                <input
-                    type="time"
-                    id="endTime"
-                >
-
+                <label for="endTime">退勤時間</label>
+                <input type="time" id="endTime">
             </div>
 
-
-            <!-- 休憩時間 -->
             <div class="break-section">
-
                 <h3>休憩時間</h3>
+                <p class="input-help">「時間：分」の形で入力してください</p>
 
-                <p class="input-help">
-                    「時間：分」の形で入力してください
-                </p>
-
-
-                <!-- 休憩① -->
                 <div class="duration-input-group">
-
-                    <label for="break1">
-                        休憩①
-                    </label>
-
+                    <label for="break1">休憩①</label>
                     <input
                         type="text"
                         id="break1"
@@ -81,17 +42,10 @@
                         maxlength="7"
                         autocomplete="off"
                     >
-
                 </div>
 
-
-                <!-- 休憩② -->
                 <div class="duration-input-group">
-
-                    <label for="break2">
-                        休憩②
-                    </label>
-
+                    <label for="break2">休憩②</label>
                     <input
                         type="text"
                         id="break2"
@@ -100,177 +54,92 @@
                         maxlength="7"
                         autocomplete="off"
                     >
-
                 </div>
-
             </div>
 
-
-            <!-- 2時間別紙ルール -->
             <div class="rule-section">
-
                 <div class="rule-header">
-
-                    <span>
-                        2時間別紙ルール
-                    </span>
-
+                    <span>2時間別紙ルール</span>
                     <button
                         type="button"
                         id="separatePaperToggle"
                         class="toggle-button"
-                    >
-                        自動
-                    </button>
-
+                    >自動</button>
                 </div>
 
                 <p class="rule-description">
                     残業が1：59を超える場合、自動で適用されます。
                 </p>
-
             </div>
 
-
-            <!-- 計算ボタン -->
             <button
                 type="button"
                 id="calculateButton"
                 class="calculate-button"
-            >
-                計算する
-            </button>
-
+            >計算する</button>
         </section>
 
-
-        <!-- 計算結果 -->
-        <section
-            id="resultSection"
-            class="result-section hidden"
-        >
-
+        <section id="resultSection" class="result-section hidden">
             <div class="result-card">
 
-
-                <!-- 出勤時間 -->
                 <div class="result-item">
-
-                    <span
-                        id="startResultLabel"
-                        class="result-label"
-                    >
+                    <span id="startResultLabel" class="result-label">
                         出勤時間
                     </span>
-
-                    <strong
-                        id="startResult"
-                        class="result-value time-result"
-                    >
+                    <strong id="startResult" class="result-value time-result">
                         --:--
                     </strong>
-
                 </div>
 
-
-                <!-- 退勤時間 -->
                 <div class="result-item">
-
-                    <span
-                        id="endResultLabel"
-                        class="result-label"
-                    >
+                    <span id="endResultLabel" class="result-label">
                         退勤時間
                     </span>
-
-                    <strong
-                        id="endResult"
-                        class="result-value time-result"
-                    >
+                    <strong id="endResult" class="result-value time-result">
                         --:--
                     </strong>
-
                 </div>
 
-
-                <!-- 実働時間 -->
                 <div class="result-item">
-
-                    <span
-                        id="workLabel"
-                        class="result-label"
-                    >
+                    <span id="workLabel" class="result-label">
                         実働時間
                     </span>
-
-                    <strong
-                        id="workResult"
-                        class="result-value"
-                    >
+                    <strong id="workResult" class="result-value">
                         0：00
                     </strong>
-
                 </div>
 
-
-                <!-- 残業時間 -->
                 <div class="result-item">
-
-                    <span
-                        id="overtimeLabel"
-                        class="result-label"
-                    >
+                    <span id="overtimeLabel" class="result-label">
                         残業時間
                     </span>
-
-                    <strong
-                        id="overtimeResult"
-                        class="result-value"
-                    >
+                    <strong id="overtimeResult" class="result-value">
                         0：00
                     </strong>
-
                 </div>
 
-
-                <!-- 別紙記入 -->
+                <!-- 別紙記入：適用時は2：00、不適用時は「なし」 -->
                 <div
                     id="separatePaperResult"
-                    class="result-item separate-paper-result hidden"
+                    class="result-item separate-paper-result"
                 >
-
-                    <span class="result-label">
-                        別紙記入
-                    </span>
-
-                    <strong class="result-value">
-                        2：00
-                    </strong>
-
+                    <span class="result-label">別紙記入</span>
+                    <strong
+                        id="separatePaperValue"
+                        class="result-value"
+                    >なし</strong>
                 </div>
 
             </div>
-
         </section>
 
-
-        <!-- 注意書き -->
         <footer class="app-footer">
-
-            <p>
-                ※このアプリは勤怠時間の自動計算・確認用です。
-            </p>
-
-            <p>
-                最終的な勤務時間は、ご自身で必ず確認してください。
-            </p>
-
+            <p>※このアプリは勤怠時間の自動計算・確認用です。</p>
+            <p>最終的な勤務時間は、ご自身で必ず確認してください。</p>
         </footer>
 
     </main>
 
-
     <script src="script.js"></script>
-
 </body>
 </html>

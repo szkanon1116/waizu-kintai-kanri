@@ -1,11 +1,12 @@
+
 /* =========================================
    和い寿 勤怠管理アプリ
-   ヒューマンエラー対策版
+   JavaScript 完成版
 ========================================= */
 
 
 /* =========================================
-   要素取得
+   ① HTML要素の取得
 ========================================= */
 
 const startTimeInput =
@@ -25,9 +26,6 @@ const calculateButton =
 
 const resultSection =
     document.getElementById("resultSection");
-
-
-/* 結果 */
 
 const startResultLabel =
     document.getElementById("startResultLabel");
@@ -53,18 +51,34 @@ const overtimeLabel =
 const overtimeResult =
     document.getElementById("overtimeResult");
 
-const separatePaperResult =
-    document.getElementById("separatePaperResult");
-
-
 const separatePaperToggle =
     document.getElementById("separatePaperToggle");
 
 
-/* =========================================
-   2時間別紙ルール
+/*
+  別紙欄の文字は、計算時に直接取得する。
+  HTML側のIDに依存して文字を更新する。
+*/
+function updateSeparatePaperDisplay(useSeparatePaper) {
 
-   AUTO → ON → OFF → AUTO
+    const paperValueElement =
+        document.querySelector(
+            "#separatePaperResult .result-value"
+        );
+
+    if (!paperValueElement) {
+        console.error("別紙記入欄が見つかりません。");
+        return;
+    }
+
+    paperValueElement.textContent =
+        useSeparatePaper ? "2：00" : "なし";
+}
+
+
+/* =========================================
+   ② 別紙ルール設定
+   自動 → ON → OFF → 自動
 ========================================= */
 
 let separatePaperMode = "auto";
@@ -75,27 +89,19 @@ separatePaperToggle.addEventListener("click", () => {
     if (separatePaperMode === "auto") {
 
         separatePaperMode = "on";
-
         separatePaperToggle.textContent = "ON";
 
     } else if (separatePaperMode === "on") {
 
         separatePaperMode = "off";
-
         separatePaperToggle.textContent = "OFF";
 
     } else {
 
         separatePaperMode = "auto";
-
         separatePaperToggle.textContent = "自動";
+
     }
-
-
-    /*
-     * 別紙ルールを変更したら、
-     * 以前の計算結果を消す。
-     */
 
     clearResult();
 
@@ -103,41 +109,27 @@ separatePaperToggle.addEventListener("click", () => {
 
 
 /* =========================================
-   時刻を「分」に変換
+   ③ 時刻を分に変換
 ========================================= */
 
-function timeToMinutes(timeValue) {
+function timeToMinutes(value) {
 
-    if (!timeValue) {
+    if (!value) {
         return null;
     }
 
-
-    const parts =
-        timeValue.split(":");
-
+    const parts = value.split(":");
 
     if (parts.length !== 2) {
         return null;
     }
 
-
-    const hours =
-        Number(parts[0]);
-
-    const minutes =
-        Number(parts[1]);
-
+    const hours = Number(parts[0]);
+    const minutes = Number(parts[1]);
 
     if (
         !Number.isInteger(hours) ||
-        !Number.isInteger(minutes)
-    ) {
-        return null;
-    }
-
-
-    if (
+        !Number.isInteger(minutes) ||
         hours < 0 ||
         hours > 23 ||
         minutes < 0 ||
@@ -146,19 +138,13 @@ function timeToMinutes(timeValue) {
         return null;
     }
 
-
     return hours * 60 + minutes;
+
 }
 
 
 /* =========================================
-   所要時間を「分」に変換
-
-   例：
-   1：30 → 90分
-   0：54 → 54分
-
-   「：」と「:」の両方に対応
+   ④ 休憩時間を分に変換
 ========================================= */
 
 function durationToMinutes(value) {
@@ -167,32 +153,17 @@ function durationToMinutes(value) {
         return null;
     }
 
-
     const normalized =
-        value
-            .trim()
-            .replace(/：/g, ":");
+        value.trim().replace(/：/g, ":");
 
-
-    const parts =
-        normalized.split(":");
-
+    const parts = normalized.split(":");
 
     if (parts.length !== 2) {
         return null;
     }
 
-
-    const hoursText =
-        parts[0].trim();
-
-    const minutesText =
-        parts[1].trim();
-
-
-    /*
-     * 数字以外を拒否
-     */
+    const hoursText = parts[0].trim();
+    const minutesText = parts[1].trim();
 
     if (
         !/^\d+$/.test(hoursText) ||
@@ -201,23 +172,12 @@ function durationToMinutes(value) {
         return null;
     }
 
-
-    const hours =
-        Number(hoursText);
-
-    const minutes =
-        Number(minutesText);
-
+    const hours = Number(hoursText);
+    const minutes = Number(minutesText);
 
     if (
         !Number.isInteger(hours) ||
-        !Number.isInteger(minutes)
-    ) {
-        return null;
-    }
-
-
-    if (
+        !Number.isInteger(minutes) ||
         hours < 0 ||
         minutes < 0 ||
         minutes >= 60
@@ -225,13 +185,13 @@ function durationToMinutes(value) {
         return null;
     }
 
-
     return hours * 60 + minutes;
+
 }
 
 
 /* =========================================
-   分を「○：△」形式に変換
+   ⑤ 分を「○：△」形式に変換
 ========================================= */
 
 function minutesToDisplay(totalMinutes) {
@@ -242,107 +202,79 @@ function minutesToDisplay(totalMinutes) {
     const minutes =
         totalMinutes % 60;
 
+    return (
+        `${hours}：${String(minutes).padStart(2, "0")}`
+    );
 
-    return `${hours}：${String(minutes).padStart(2, "0")}`;
 }
 
 
 /* =========================================
-   分を「HH:MM」形式に変換
-
-   出勤・退勤時間表示用
+   ⑥ 分を「HH:MM」形式に変換
 ========================================= */
 
 function minutesToTimeDisplay(totalMinutes) {
 
-    const normalizedMinutes =
-        (
-            totalMinutes % (24 * 60) +
-            (24 * 60)
-        ) % (24 * 60);
-
+    const normalized =
+        ((totalMinutes % 1440) + 1440) % 1440;
 
     const hours =
-        Math.floor(normalizedMinutes / 60);
+        Math.floor(normalized / 60);
 
     const minutes =
-        normalizedMinutes % 60;
-
+        normalized % 60;
 
     return (
         `${String(hours).padStart(2, "0")}:` +
         `${String(minutes).padStart(2, "0")}`
     );
+
 }
 
 
 /* =========================================
-   結果を消す
+   ⑦ 計算結果をリセット
 ========================================= */
 
 function clearResult() {
 
     resultSection.classList.add("hidden");
 
+    startResultLabel.textContent = "出勤時間";
+    endResultLabel.textContent = "退勤時間";
+    workLabel.textContent = "実働時間";
+    overtimeLabel.textContent = "残業時間";
 
-    startResultLabel.textContent =
-        "出勤時間";
+    startResult.textContent = "--:--";
+    endResult.textContent = "--:--";
 
-    endResultLabel.textContent =
-        "退勤時間";
+    workResult.textContent = "0：00";
+    overtimeResult.textContent = "0：00";
 
-    workLabel.textContent =
-        "実働時間";
+    updateSeparatePaperDisplay(false);
 
-    overtimeLabel.textContent =
-        "残業時間";
-
-
-    startResult.textContent =
-        "--:--";
-
-    endResult.textContent =
-        "--:--";
-
-    workResult.textContent =
-        "0：00";
-
-    overtimeResult.textContent =
-        "0：00";
-
-
-    separatePaperResult.classList.add(
-        "hidden"
-    );
 }
 
 
 /* =========================================
-   入力内容が変更されたら
-   古い計算結果を消す
+   ⑧ 入力変更時に古い結果を消す
 ========================================= */
 
-const inputElements = [
+[
     startTimeInput,
     endTimeInput,
     break1Input,
     break2Input
-];
 
+].forEach((input) => {
 
-inputElements.forEach((input) => {
-
-    input.addEventListener("input", () => {
-
-        clearResult();
-
-    });
+    input.addEventListener("input", clearResult);
 
 });
 
 
 /* =========================================
-   計算ボタン
+   ⑨ 計算ボタン
 ========================================= */
 
 calculateButton.addEventListener(
@@ -352,21 +284,21 @@ calculateButton.addEventListener(
 
 
 /* =========================================
-   勤怠計算
+   ⑩ 勤怠計算メイン処理
 ========================================= */
 
 function calculateAttendance() {
 
+    clearResult();
 
-    /* =====================================
-       ① 出勤・退勤の入力チェック
-    ===================================== */
+
+    /* -------------------------------------
+       出勤時間チェック
+    ------------------------------------- */
 
     if (!startTimeInput.value) {
 
-        alert(
-            "出勤時間を入力してください。"
-        );
+        alert("出勤時間を入力してください。");
 
         startTimeInput.focus();
 
@@ -374,11 +306,13 @@ function calculateAttendance() {
     }
 
 
+    /* -------------------------------------
+       退勤時間チェック
+    ------------------------------------- */
+
     if (!endTimeInput.value) {
 
-        alert(
-            "退勤時間を入力してください。"
-        );
+        alert("退勤時間を入力してください。");
 
         endTimeInput.focus();
 
@@ -386,20 +320,15 @@ function calculateAttendance() {
     }
 
 
-    /* =====================================
-       ② 出勤・退勤を分に変換
-    ===================================== */
+    /* -------------------------------------
+       時刻を分に変換
+    ------------------------------------- */
 
     const startMinutes =
-        timeToMinutes(
-            startTimeInput.value
-        );
-
+        timeToMinutes(startTimeInput.value);
 
     let endMinutes =
-        timeToMinutes(
-            endTimeInput.value
-        );
+        timeToMinutes(endTimeInput.value);
 
 
     if (
@@ -415,22 +344,26 @@ function calculateAttendance() {
     }
 
 
-    /* =====================================
-       ③ 夜勤対応
+    /* -------------------------------------
+       日をまたぐ勤務に対応
 
-       退勤 < 出勤
-       → 翌日の退勤として扱う
-    ===================================== */
+       例：
+       出勤 22:00
+       退勤 12:00
+
+       退勤を翌日の12:00として扱う
+    ------------------------------------- */
 
     if (endMinutes < startMinutes) {
 
         endMinutes += 24 * 60;
+
     }
 
 
-    /* =====================================
-       ④ 出勤＝退勤をチェック
-    ===================================== */
+    /* -------------------------------------
+       出勤と退勤が同じ場合
+    ------------------------------------- */
 
     if (endMinutes === startMinutes) {
 
@@ -443,9 +376,9 @@ function calculateAttendance() {
     }
 
 
-    /* =====================================
-       ⑤ 勤務時間
-    ===================================== */
+    /* -------------------------------------
+       勤務時間の合計
+    ------------------------------------- */
 
     const totalSpan =
         endMinutes - startMinutes;
@@ -455,24 +388,20 @@ function calculateAttendance() {
 
         alert(
             "勤務時間を正しく計算できません。\n" +
-            "出勤・退勤時間を確認してください。"
+            "入力内容を確認してください。"
         );
 
         return;
     }
 
 
-    /* =====================================
-       ⑥ 休憩①チェック
-
-       休憩①は必須
-    ===================================== */
+    /* -------------------------------------
+       休憩①チェック
+    ------------------------------------- */
 
     if (!break1Input.value.trim()) {
 
-        alert(
-            "休憩①を入力してください。"
-        );
+        alert("休憩①を入力してください。");
 
         break1Input.focus();
 
@@ -481,9 +410,7 @@ function calculateAttendance() {
 
 
     const break1 =
-        durationToMinutes(
-            break1Input.value
-        );
+        durationToMinutes(break1Input.value);
 
 
     if (break1 === null) {
@@ -500,67 +427,57 @@ function calculateAttendance() {
     }
 
 
-    /* =====================================
-       ⑦ 休憩②チェック
-
-       空欄OK
-    ===================================== */
+    /* -------------------------------------
+       休憩②チェック
+       空欄の場合は0分
+    ------------------------------------- */
 
     let break2 = 0;
 
 
-    if (
-        break2Input.value.trim() !== ""
-    ) {
+    if (break2Input.value.trim() !== "") {
 
         break2 =
-            durationToMinutes(
-                break2Input.value
-            );
-
+            durationToMinutes(break2Input.value);
 
         if (break2 === null) {
 
             alert(
                 "休憩②の入力が正しくありません。\n\n" +
                 "「時間：分」の形式で入力してください。\n" +
-                "例：0：30\n\n" +
-                "休憩②がない場合は空欄にしてください。"
+                "例：0：30"
             );
 
             break2Input.focus();
 
             return;
         }
+
     }
 
 
-    /* =====================================
-       ⑧ 休憩合計
-    ===================================== */
+    /* -------------------------------------
+       休憩時間の合計
+    ------------------------------------- */
 
     const totalBreak =
         break1 + break2;
 
 
-    /* =====================================
-       ⑨ 休憩が勤務時間を超えていないか
-    ===================================== */
-
     if (totalBreak > totalSpan) {
 
         alert(
             "休憩時間の合計が勤務時間を超えています。\n\n" +
-            "出勤・退勤・休憩時間を確認してください。"
+            "入力内容を確認してください。"
         );
 
         return;
     }
 
 
-    /* =====================================
-       ⑩ 実働時間
-    ===================================== */
+    /* -------------------------------------
+       実働時間
+    ------------------------------------- */
 
     const actualWork =
         totalSpan - totalBreak;
@@ -569,76 +486,55 @@ function calculateAttendance() {
     if (actualWork <= 0) {
 
         alert(
-            "実働時間が0以下になっています。\n\n" +
-            "入力内容を確認してください。"
+            "実働時間が0以下になっています。"
         );
 
         return;
     }
 
 
-    /* =====================================
-       ⑪ 残業時間
-
-       8時間を超えた部分
-    ===================================== */
+    /* -------------------------------------
+       残業時間
+       実働8時間を超えた部分
+    ------------------------------------- */
 
     const overtime =
-        Math.max(
-            0,
-            actualWork - 8 * 60
-        );
+        Math.max(0, actualWork - 480);
 
 
     /* =====================================
-       ⑫ 別紙ルール判定
+       ⑪ 2時間別紙ルール判定
+
+       自動：
+       残業2時間以上で適用
+
+       ON：
+       残業2時間以上で適用
+
+       OFF：
+       適用しない
     ===================================== */
 
     let useSeparatePaper = false;
 
 
-    /*
-     * 自動
-     *
-     * 残業が1：59を超える
-     * → 2時間別紙
-     */
+    if (separatePaperMode === "auto") {
 
-    if (
-        separatePaperMode === "auto"
-    ) {
+        useSeparatePaper = overtime >= 120;
 
-        useSeparatePaper =
-            overtime > 119;
-    }
+    } else if (separatePaperMode === "on") {
 
+        useSeparatePaper = overtime >= 120;
 
-    /*
-     * 手動ON
-     */
-
-    else if (
-        separatePaperMode === "on"
-    ) {
-
-        useSeparatePaper = true;
-    }
-
-
-    /*
-     * 手動OFF
-     */
-
-    else if (
-        separatePaperMode === "off"
-    ) {
+    } else if (separatePaperMode === "off") {
 
         useSeparatePaper = false;
+
     }
 
 
     /* =====================================
-       ⑬ 表示用の時間
+       ⑫ 表示用時間を計算
     ===================================== */
 
     let displayWork =
@@ -651,63 +547,39 @@ function calculateAttendance() {
         endMinutes;
 
 
-    /* =====================================
-       ⑭ 別紙ルール適用時
-    ===================================== */
-
     if (useSeparatePaper) {
 
         /*
-         * 残業2時間未満なのに
-         * 別紙ルールを適用する事故を防止
-         */
-
-        if (overtime < 120) {
-
-            alert(
-                "2時間別紙ルールを適用するには、\n" +
-                "残業時間が2時間以上必要です。\n\n" +
-                "現在の残業時間：" +
-                minutesToDisplay(overtime)
-            );
-
-            return;
-        }
-
-
-        /*
-         * 勤務表上の実働から2時間
-         */
+          勤務表上の実働時間から2時間引く
+        */
 
         displayWork =
             actualWork - 120;
 
 
         /*
-         * 勤務表上の残業から2時間
-         */
+          勤務表上の残業時間から2時間引く
+        */
 
         displayOvertime =
             overtime - 120;
 
 
         /*
-         * 勤務表上の退勤時間から2時間
-         */
+          勤務表上の退勤時間から2時間引く
+        */
 
         displayEndMinutes =
             endMinutes - 120;
+
     }
 
 
     /* =====================================
-       ⑮ 結果ラベル
+       ⑬ 結果ラベルの切り替え
     ===================================== */
 
     if (useSeparatePaper) {
-
-        startResultLabel.textContent =
-            "出勤時間";
 
         endResultLabel.textContent =
             "（勤務表上の）退勤時間";
@@ -718,19 +590,7 @@ function calculateAttendance() {
         overtimeLabel.textContent =
             "（勤務表上の）残業時間";
 
-
-        /*
-         * 別紙記入 2：00 を表示
-         */
-
-        separatePaperResult.classList.remove(
-            "hidden"
-        );
-
     } else {
-
-        startResultLabel.textContent =
-            "出勤時間";
 
         endResultLabel.textContent =
             "退勤時間";
@@ -741,57 +601,48 @@ function calculateAttendance() {
         overtimeLabel.textContent =
             "残業時間";
 
-
-        /*
-         * 別紙記入は非表示
-         */
-
-        separatePaperResult.classList.add(
-            "hidden"
-        );
     }
 
 
     /* =====================================
-       ⑯ 結果の数値
+       ⑭ 別紙記入欄の表示
+
+       適用あり → 2：00
+       適用なし → なし
+
+       昼勤・夜勤共通
     ===================================== */
 
-    startResult.textContent =
-        minutesToTimeDisplay(
-            startMinutes
-        );
-
-
-    endResult.textContent =
-        minutesToTimeDisplay(
-            displayEndMinutes
-        );
-
-
-    workResult.textContent =
-        minutesToDisplay(
-            displayWork
-        );
-
-
-    overtimeResult.textContent =
-        minutesToDisplay(
-            displayOvertime
-        );
-
-
-    /* =====================================
-       ⑰ 結果表示
-    ===================================== */
-
-    resultSection.classList.remove(
-        "hidden"
+    updateSeparatePaperDisplay(
+        useSeparatePaper
     );
 
 
     /* =====================================
-       ⑱ 結果までスクロール
+       ⑮ 計算結果を画面に反映
     ===================================== */
+
+    startResult.textContent =
+        minutesToTimeDisplay(startMinutes);
+
+    endResult.textContent =
+        minutesToTimeDisplay(displayEndMinutes);
+
+    workResult.textContent =
+        minutesToDisplay(displayWork);
+
+    overtimeResult.textContent =
+        minutesToDisplay(displayOvertime);
+
+
+    /* =====================================
+       ⑯ 結果表示
+    ===================================== */
+
+    resultSection.classList.remove("hidden");
+
+
+    /* 結果までスクロール */
 
     resultSection.scrollIntoView({
         behavior: "smooth",
